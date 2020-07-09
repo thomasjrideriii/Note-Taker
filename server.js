@@ -3,33 +3,34 @@ const app = express();
 const path = require("path");
 const fs = require("fs");
 const PORT = process.env.PORT || 8080;
+
+
 // const crypto = require("crypto");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static("app/public"));
 // HTML Routes
 
-app.get("/notes", function(req, res) {
-    res.sendFile(path.join(__dirname, "public/notes.html"))
-});
-app.get("*", function(req, res) {
-    res.sendFile(path.join(__dirname, "public/index.html"))
-});
+require("./routes/htmlRoutes")(app);
 
 
 // API Routes
 
+
+// require("./routes/apiRoutes")
+
 app.get("/api/notes", function(req, res) {
     console.log("GET!")
-    const notesData = fs.readFile("./db/db.json", utf8, function(err) {
-        console.log(notesData)
+    const notesData = fs.readFile("./db/db.json", "utf8", function(err, notes) {
+        console.log(notes)
         if (err) {
             throw err
         }
-        res.json(notesData)
+        res.json(notes)
     })
-})
+});
 
 app.post("/api/notes", function(req, res) {
     var newNote = req.body;
@@ -49,6 +50,8 @@ app.post("/api/notes", function(req, res) {
 app.delete("/app/notes/:id", function(req, res) {
     res.end()
 })
+
+
 
 app.listen(PORT, function() {
     console.log("Listening on port : " + PORT)
